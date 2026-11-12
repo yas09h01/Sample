@@ -16,12 +16,18 @@ try:
             company_name TEXT NOT NULL,
             job_role TEXT NOT NULL,
             application_date TEXT,
+            interview_date TEXT,
             status TEXT
         )
         """
     )
 
-    # Save the table creation in the database.
+    # Keep older databases working by adding a missing interview_date column.
+    cursor.execute("PRAGMA table_info(applications)")
+    columns = {column[1] for column in cursor.fetchall()}
+    if "interview_date" not in columns:
+        cursor.execute("ALTER TABLE applications ADD COLUMN interview_date TEXT")
+
     connection.commit()
 
     print("Database and applications table created successfully.")
